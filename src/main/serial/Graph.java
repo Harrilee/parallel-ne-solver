@@ -12,7 +12,7 @@ public class Graph {
     public int[][] graph;
     public int size;
     int[] dist;
-    int[][] path;
+    int[] parent;
 
     public Graph(int[][] graph) {
         this.graph = graph;
@@ -22,7 +22,10 @@ public class Graph {
     public int[] dijkstra(int startIdx) {
         // Step 0: initialization
         this.dist = new int[this.size];  // return value for minimum distance
-        this.path = new int[this.size][]; // keep track of the shortest path
+        this.parent = new int[this.size]; // keep track of the parent of current node
+        for (int i = 0; i<this.size;i++){
+            this.parent[i] = -1;
+        }
         Boolean[] sptSet = new Boolean[this.size]; // shortest spanning tree set
 
         for (int i = 0; i < this.size; i++) {
@@ -47,12 +50,13 @@ public class Graph {
             if (u == -1){
                 return dist;  // Graph not fully visited
             }
-            // Step 2.2: mark u as visited
+            // Step 2.2: mark u as visited, keep track of u
             sptSet[u] = true;
             // Step 2.3: update distances
             for (int v = 0; v < this.size; v++) {
                 if (!sptSet[v] && this.graph[u][v] != 0 && this.graph[u][v] + this.dist[u] < this.dist[v] && this.dist[u] != Integer.MAX_VALUE) {
                     this.dist[v] = this.graph[u][v] + this.dist[u];
+                    this.parent[v] = u;
                 }
             }
         }
@@ -70,6 +74,6 @@ public class Graph {
         /*
         get path to each node in the format of string
          */
-        return Arrays.toString(this.path);
+        return Arrays.toString(this.parent);
     }
 }

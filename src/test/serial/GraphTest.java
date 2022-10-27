@@ -19,8 +19,8 @@ public class GraphTest {
                 {8, 11, 0, 0, 0, 0, 1, 0, 7},
                 {0, 0, 2, 0, 0, 0, 6, 7, 0}};
         Graph graph = new Graph(graphArray);
-        graph.dijkstra(0);
         assertEquals("[0, 4, 12, 19, 21, 11, 9, 8, 14]", graph.toDistString());
+        assertEquals("[-1, 0, 1, 2, 5, 6, 7, 0, 2]", graph.toPathString());
     }
 
     @Test
@@ -29,7 +29,7 @@ public class GraphTest {
                 {0, 0, 0},
                 {0, 0, 0}};
         Graph graph = new Graph(graphArray);
-        graph.dijkstra(0);
         assertEquals("[0, 3, 2147483647]", graph.toDistString());
+        assertEquals("[-1, 0, -1]", graph.toPathString());
     }
 }
