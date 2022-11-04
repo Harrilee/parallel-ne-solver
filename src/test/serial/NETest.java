@@ -33,6 +33,24 @@ public class NETest {
             {0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
+    double[][][] tripRtFuncBPRBraess = new double[][][]{
+            {{},{},{1e-8,1e9,1,1},{50,0.02,1,1},{},{}},
+            {{},{},{},{},{},{}},
+            {{},{50,0.02,1,1},{},{10,0.1,1,1},{},{}},
+            {{},{1e-8,1e9,1,1},{},{},{},{}},
+            {{},{},{},{},{},{}},
+            {{},{},{},{},{},{}},
+    };
+
+    double[][] odPsBraess = new double[][]{
+            {0, 6, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0},
+    };
+
     @Test
     void testGetTripRtLinear() {
         double[][][] tripRtFuncLinear = new double[][][]{
@@ -85,10 +103,17 @@ public class NETest {
 
 
     @Test
-    void testFrankWolfeBPR() {
-
+    void testFrankWolfeBPR9() {
         NE ne = new NE();
         NE.NEOutput neOutput = ne.frankWolfe(tripRtFuncBPR9, odPs9, "BPR");
         assertTrue(neOutput.z > 2455.87 - 5 && neOutput.z < 2455.87 + 5);
+    }
+
+    @Test
+    void testFrankWolfeBPRBraess() {
+        NE ne = new NE();
+        NE.NEOutput neOutput = ne.frankWolfe(tripRtFuncBPRBraess, odPsBraess, "BPR");
+        System.out.println(neOutput.z);
+        assertTrue(neOutput.z > 552 - 5 && neOutput.z < 552 + 5);
     }
 }
