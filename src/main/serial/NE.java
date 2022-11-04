@@ -12,6 +12,7 @@ public class NE {
     public static class NEOutput {
         public double[][] curTfc;
         public double z;
+        public double totalTime;
     }
 
     /**
@@ -107,7 +108,8 @@ public class NE {
         for (int i = 0; i < tripRtFunc.length; i++) {
             for (int j = 0; j < tripRtFunc.length; j++) {
                 if (tripRtFunc[i][j].length != 0) {
-                    z += tripRtFunc[i][j][0] * (curTfc[i][j] + tripRtFunc[i][j][1] / (tripRtFunc[i][j][3] + 1) / (Math.pow(tripRtFunc[i][j][2], tripRtFunc[i][j][3])) * Math.pow(curTfc[i][j], tripRtFunc[i][j][3] + 1));
+                    z += tripRtFunc[i][j][0] *
+                            (curTfc[i][j] + tripRtFunc[i][j][1] / (tripRtFunc[i][j][3] + 1) / (Math.pow(tripRtFunc[i][j][2], tripRtFunc[i][j][3])) * Math.pow(curTfc[i][j], tripRtFunc[i][j][3] + 1));
                 }
             }
         }
@@ -139,7 +141,6 @@ public class NE {
      * @param odPs           OD pairs
      * @param curTfc         current traffic
      * @param tripRtFuncType traffic function type, either "linear" or "BPR"
-     * @return
      */
     public double[][] getNewTfc(double[][][] tripRtFunc, double[][] odPs, double[][] curTfc, String tripRtFuncType) {
         int size = tripRtFunc.length;
@@ -246,6 +247,15 @@ public class NE {
         // End step: gather output values
         neOutput.curTfc = curTfc;
         neOutput.z = z;
+        // calculate the total trip rate
+        double totalTime = 0;
+        double[][] curGraph = getTripRt(tripRtFunc, curTfc, tripRtFuncType);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                totalTime += curGraph[i][j] * curTfc[i][j];
+            }
+        }
+        neOutput.totalTime = totalTime;
         return neOutput;
     }
 }

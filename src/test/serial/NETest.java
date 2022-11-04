@@ -106,14 +106,15 @@ public class NETest {
     void testFrankWolfeBPR9() {
         NE ne = new NE();
         NE.NEOutput neOutput = ne.frankWolfe(tripRtFuncBPR9, odPs9, "BPR");
-        assertTrue(neOutput.z > 2455.87 - 5 && neOutput.z < 2455.87 + 5);
+        System.out.println(neOutput.totalTime);
+        assertTrue(neOutput.totalTime > 2455.87 - 5 && neOutput.totalTime < 2455.87 + 5);
     }
 
     @Test
     void testFrankWolfeBPRBraess() {
         NE ne = new NE();
         NE.NEOutput neOutput = ne.frankWolfe(tripRtFuncBPRBraess, odPsBraess, "BPR");
-        System.out.println(neOutput.z);
-        assertTrue(neOutput.z > 552 - 5 && neOutput.z < 552 + 5);
+        System.out.println(neOutput.totalTime);
+        assertTrue(neOutput.totalTime > 552 - 5 && neOutput.totalTime < 552 + 5);
     }
 }
