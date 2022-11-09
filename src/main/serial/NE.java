@@ -4,7 +4,10 @@ package main.serial;
 public class NE {
 
     final int LOOP_LIMIT = 20;
-    final double EPSILON = 1e-6;
+    final double EPSILON = 1e-2;
+
+    public double[][] travelTimes; // travel time for each OD pair, used for column generation
+    public double[][][] maskedNetwork; // masked network for each OD pair, used for column generation
 
     /**
      * Return values for Frank-Wolfe algorithm and Column Generation algorithm
@@ -48,7 +51,7 @@ public class NE {
         double[][] tripRt = new double[curTfc.length][curTfc[0].length];
         for (int i = 0; i < curTfc.length; i++) {
             for (int j = 0; j < curTfc[0].length; j++) {
-                if (tripRtFunc[i][j].length == 0) {
+                if (tripRtFunc[i][j] == null || tripRtFunc[i][j].length == 0) {
                     tripRt[i][j] = 0;
                 } else {
                     tripRt[i][j] = tripRtFunc[i][j][0] * (1 + tripRtFunc[i][j][1] * Math.pow(curTfc[i][j] / tripRtFunc[i][j][2], tripRtFunc[i][j][3]));
@@ -107,7 +110,7 @@ public class NE {
         double z = 0;
         for (int i = 0; i < tripRtFunc.length; i++) {
             for (int j = 0; j < tripRtFunc.length; j++) {
-                if (tripRtFunc[i][j].length != 0) {
+                if (tripRtFunc[i][j] != null && tripRtFunc[i][j].length != 0) {
                     z += tripRtFunc[i][j][0] *
                             (curTfc[i][j] + tripRtFunc[i][j][1] / (tripRtFunc[i][j][3] + 1) / (Math.pow(tripRtFunc[i][j][2], tripRtFunc[i][j][3])) * Math.pow(curTfc[i][j], tripRtFunc[i][j][3] + 1));
                 }
@@ -146,11 +149,6 @@ public class NE {
         int size = tripRtFunc.length;
         double[][] curGraph = getTripRt(tripRtFunc, curTfc, tripRtFuncType);
         double[][] newTfc = new double[size][size];
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                newTfc[i][j] = 0;
-            }
-        }
         Graph graph = new Graph(curGraph);
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -163,6 +161,53 @@ public class NE {
             }
         }
         return newTfc;
+    }
+
+    /**
+     * Update the `Restricted Master Problem` of the column generation algorithm
+     * Given masked network, add new OD-pair to the masked traffic stored in this.maskedNetwork
+     * Travel time for each OD-pair is stored in this.travelTimes
+     *
+     * @param tripRtFunc     traffic rate function
+     * @param odPs           OD pairs
+     * @param curTfc         current traffic
+     * @param tripRtFuncType traffic function type, either "linear" or "BPR"
+     * @param initialUpdate  whether this is the first update
+     * @return whether the new OD-pair is added to the masked traffic
+     */
+    public boolean updateNetwork(double[][][] tripRtFunc, double[][] odPs, double[][] curTfc, String tripRtFuncType, boolean initialUpdate) {
+        int size = tripRtFunc.length;
+        boolean updated = false;
+        if (initialUpdate) { // initialization jobs
+            this.travelTimes = new double[size][size];
+            curTfc = new double[size][size];
+        }
+        double[][] curGraph = getTripRt(tripRtFunc, curTfc, tripRtFuncType);
+        Graph graph = new Graph(curGraph);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (odPs[i][j] > 0) {
+                    int[] shortestPath = graph.getShortestPath(i, j);
+                    double shortestTime = graph.getShortestTime(i, j);
+                    if(shortestTime < this.travelTimes[i][j] || this.travelTimes[i][j] == 0) {
+                        for (int k = 0; k < shortestPath.length - 1; k++) { // add the shortest path to masked network
+                            if (this.maskedNetwork[shortestPath[k]][shortestPath[k + 1]] == null || this.maskedNetwork[shortestPath[k]][shortestPath[k + 1]].length == 0) {
+                                this.maskedNetwork[shortestPath[k]][shortestPath[k + 1]] = tripRtFunc[shortestPath[k]][shortestPath[k + 1]];
+                                updated = true;
+                            }
+                        }
+                        if(!initialUpdate) {
+                            // if this is the first update, we need to have a feasible solution
+                            // thus we cannot have early return
+                            // else we can apply early return
+                            this.travelTimes[i][j] = shortestTime;
+//                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return updated;
     }
 
     /**
@@ -200,11 +245,6 @@ public class NE {
         int size = tripRtFunc.length;
         // Step 0: find a feasible solution (using the shortest path)
         double[][] curTfc = new double[size][size];
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                curTfc[i][j] = 0;
-            }
-        }
         curTfc = getNewTfc(tripRtFunc, odPs, curTfc, tripRtFuncType);
         double z, newZ;
         int iter = 0;
@@ -256,6 +296,49 @@ public class NE {
             }
         }
         neOutput.totalTime = totalTime;
+        return neOutput;
+    }
+
+    /**
+     * Column generation algorithm for the network equilibrium problem.
+     * This function calls the frankWolfe function to solve the linearized sub problem.
+     * @param tripRtFunc     trip rate function
+     * @param odPs           odPs[i][j] represents the travel demand from origin i to destination j
+     * @param tripRtFuncType traffic function type, either "linear" or "BPR"
+     * @return NEOutput
+     * @see NEOutput
+     */
+    public NEOutput columnGeneration(double[][][] tripRtFunc, double[][] odPs, String tripRtFuncType) {
+        NEOutput neOutput = new NEOutput();
+        int size = tripRtFunc.length;
+        // Step 0: find a feasible solution (using the shortest path)
+        this.maskedNetwork = new double[size][size][];
+        updateNetwork(tripRtFunc, odPs, neOutput.curTfc, tripRtFuncType, true); // curTfc is 0
+        double z;
+        int iter = 0;
+
+        while (true) {
+            // utils
+            iter++;
+            // count used links
+            int usedLinkCount = 0;
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    if (this.maskedNetwork[i][j] != null && this.maskedNetwork[i][j].length > 0) {
+                        usedLinkCount++;
+                    }
+                }
+            }
+            System.out.println("Iteration " + iter+ ". Used link count: " + usedLinkCount);
+            // Step 1: solve master problem
+            neOutput = frankWolfe(this.maskedNetwork, odPs, tripRtFuncType);
+            // Step 2: solve sub problem
+            boolean updated = updateNetwork(tripRtFunc, odPs, neOutput.curTfc, tripRtFuncType, false);
+            if(!updated){
+                break;
+            }
+        }
+        System.out.println("Column generation iteration " + iter);
         return neOutput;
     }
 }
