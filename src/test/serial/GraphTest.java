@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 public class GraphTest {
     @Test
     void testGraphDijkstra1() {
@@ -18,7 +20,7 @@ public class GraphTest {
                 {0, 0, 0, 0, 0, 2, 0, 1, 6},
                 {8, 11, 0, 0, 0, 0, 1, 0, 7},
                 {0, 0, 2, 0, 0, 0, 6, 7, 0}};
-        Graph graph = new Graph(graphArray);
+        Graph graph = new Graph(graphArray, 1);
         graph.dijkstra(0);
         assertArrayEquals(new double[]{0, 4, 12, 19, 21, 11, 9, 8, 14}, graph.dists[0]);
         assertArrayEquals(new int[]{-1, 0, 1, 2, 5, 6, 7, 0, 2}, graph.parents[0]);
@@ -30,7 +32,7 @@ public class GraphTest {
         double[][] graphArray = new double[][]{{0, 3, 0},
                 {0, 0, 0},
                 {0, 0, 0}};
-        Graph graph = new Graph(graphArray);
+        Graph graph = new Graph(graphArray, 1);
         graph.dijkstra(0);
         assertArrayEquals(new double[]{0, 3, 2147483647}, graph.dists[0]);
         assertArrayEquals(new int[]{-1, 0, -1}, graph.parents[0]);
@@ -47,7 +49,8 @@ public class GraphTest {
                 {0, 0, 0, 0, 0, 2, 0, 1, 6},
                 {8, 11, 0, 0, 0, 0, 1, 0, 7},
                 {0, 0, 2, 0, 0, 0, 6, 7, 0}};
-        Graph graph = new Graph(graphArray);
+        Graph graph = new Graph(graphArray, 2);
+        graph.getShortestPath(0, 3);
         // path
         assertArrayEquals(new int[]{0,1,2,3}, graph.getShortestPath(0, 3));
         // time

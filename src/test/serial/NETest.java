@@ -101,7 +101,7 @@ public class NETest {
     @Test
     void testFrankWolfeBPR9() {
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(tripRtFuncBPR9, odPs9, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(tripRtFuncBPR9, odPs9, "BPR",1);
         System.out.println(neOutput.totalTime);
         assertTrue(neOutput.totalTime > 2455.87 - 5 && neOutput.totalTime < 2455.87 + 5);
     }
@@ -109,7 +109,7 @@ public class NETest {
     @Test
     void testFrankWolfeBPRBraess() {
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(tripRtFuncBPRBraess, odPsBraess, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(tripRtFuncBPRBraess, odPsBraess, "BPR",1);
         System.out.println(neOutput.totalTime);
         assertTrue(neOutput.totalTime > 552 - 5 && neOutput.totalTime < 552 + 5);
     }
@@ -117,7 +117,7 @@ public class NETest {
     @Test
     void testColumnGenerationBPR9() {
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(tripRtFuncBPR9, odPs9, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(tripRtFuncBPR9, odPs9, "BPR",1);
         System.out.println(neOutput.totalTime);
         assertTrue(neOutput.totalTime > 2455.87 - 5 && neOutput.totalTime < 2455.87 + 5);
     }
@@ -125,7 +125,7 @@ public class NETest {
     @Test
     void testColumnGenerationBPRBraess() {
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(tripRtFuncBPRBraess, odPsBraess, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(tripRtFuncBPRBraess, odPsBraess, "BPR",1);
         System.out.println(neOutput.totalTime);
         assertTrue(neOutput.totalTime > 552 - 5 && neOutput.totalTime < 552 + 5);
     }

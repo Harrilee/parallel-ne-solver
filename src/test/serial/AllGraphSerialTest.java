@@ -14,7 +14,7 @@ public class AllGraphSerialTest {
     public void testBraessNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("Braess_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -22,7 +22,7 @@ public class AllGraphSerialTest {
     public void testBraessNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("Braess_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -30,7 +30,7 @@ public class AllGraphSerialTest {
     public void testNineNodeNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("NineNode_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -38,7 +38,7 @@ public class AllGraphSerialTest {
     public void testNineNodeNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("NineNode_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -46,7 +46,7 @@ public class AllGraphSerialTest {
     public void testSiouxFallsNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("SiouxFalls_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -54,7 +54,7 @@ public class AllGraphSerialTest {
     public void testSiouxFallsNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("SiouxFalls_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -62,7 +62,7 @@ public class AllGraphSerialTest {
     public void testHullNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("Hull_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -70,7 +70,7 @@ public class AllGraphSerialTest {
     public void testHullNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("Hull_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -78,7 +78,7 @@ public class AllGraphSerialTest {
     public void testNewHullNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("NewHull_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -86,7 +86,7 @@ public class AllGraphSerialTest {
     public void testNewHullNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("NewHull_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -94,7 +94,7 @@ public class AllGraphSerialTest {
     public void testWinnipegNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("Winnipeg_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -102,7 +102,7 @@ public class AllGraphSerialTest {
     public void testWinnipegNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("Winnipeg_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -110,7 +110,7 @@ public class AllGraphSerialTest {
     public void testAnaheimNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("Anaheim_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -118,7 +118,7 @@ public class AllGraphSerialTest {
     public void testAnaheimNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("Anaheim_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -126,7 +126,7 @@ public class AllGraphSerialTest {
     public void testBarcelonaNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("Barcelona_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -134,7 +134,7 @@ public class AllGraphSerialTest {
     public void testBarcelonaNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("Barcelona_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -142,7 +142,7 @@ public class AllGraphSerialTest {
     public void testTerrassaNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("Terrassa_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -150,7 +150,7 @@ public class AllGraphSerialTest {
     public void testTerrassaNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("Terrassa_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -158,7 +158,7 @@ public class AllGraphSerialTest {
     public void testChicagoSketchaNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("ChicagoSketch_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
@@ -166,7 +166,7 @@ public class AllGraphSerialTest {
     public void testChicagoSketchNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("ChicagoSketch_net.xlsx");
         NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR");
+        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 

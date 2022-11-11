@@ -13,12 +13,14 @@ public class Graph {
     public int size;
     public double[][] dists;
     public int[][] parents;
+    public int firstThruNode;
 
-    public Graph(double[][] graph) {
+    public Graph(double[][] graph, int firstThruNode) {
         this.graph = graph;
         this.size = graph.length;
         this.dists = new double[this.size][];
         this.parents = new int[this.size][];
+        this.firstThruNode = firstThruNode;
     }
 
     /**
@@ -61,10 +63,12 @@ public class Graph {
             // Step 2.2: mark u as visited, keep track of u
             sptSet[u] = true;
             // Step 2.3: update distances
-            for (int v = 0; v < this.size; v++) {
-                if (!sptSet[v] && this.graph[u][v] != 0 && this.graph[u][v] + dist[u] < dist[v] && dist[u] != Integer.MAX_VALUE) {
-                    dist[v] = this.graph[u][v] + dist[u];
-                    parent[v] = u;
+            if (u >= this.firstThruNode - 1 || u == startIdx) { // only if u is not first thru node
+                for (int v = 0; v < this.size; v++) {
+                    if (!sptSet[v] && this.graph[u][v] != 0 && this.graph[u][v] + dist[u] < dist[v] && dist[u] != Integer.MAX_VALUE) {
+                        dist[v] = this.graph[u][v] + dist[u];
+                        parent[v] = u;
+                    }
                 }
             }
         }

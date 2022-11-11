@@ -4,7 +4,7 @@ package main.serial;
 public class NE {
 
     final int LOOP_LIMIT = 20;
-    final double EPSILON = 1e-2;
+    final double EPSILON = 1e-6;
 
     public double[][] travelTimes; // travel time for each OD pair, used for column generation
     public double[][][] maskedNetwork; // masked network for each OD pair, used for column generation
@@ -144,12 +144,13 @@ public class NE {
      * @param odPs           OD pairs
      * @param curTfc         current traffic
      * @param tripRtFuncType traffic function type, either "linear" or "BPR"
+     * @param firstThruNode  first thru node. Minimum is 1.
      */
-    public double[][] getNewTfc(double[][][] tripRtFunc, double[][] odPs, double[][] curTfc, String tripRtFuncType) {
+    public double[][] getNewTfc(double[][][] tripRtFunc, double[][] odPs, double[][] curTfc, String tripRtFuncType, int firstThruNode) {
         int size = tripRtFunc.length;
         double[][] curGraph = getTripRt(tripRtFunc, curTfc, tripRtFuncType);
         double[][] newTfc = new double[size][size];
-        Graph graph = new Graph(curGraph);
+        Graph graph = new Graph(curGraph, firstThruNode);
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (odPs[i][j] > 0) {
@@ -175,7 +176,7 @@ public class NE {
      * @param initialUpdate  whether this is the first update
      * @return whether the new OD-pair is added to the masked traffic
      */
-    public boolean updateNetwork(double[][][] tripRtFunc, double[][] odPs, double[][] curTfc, String tripRtFuncType, boolean initialUpdate) {
+    public boolean updateNetwork(double[][][] tripRtFunc, double[][] odPs, double[][] curTfc, String tripRtFuncType, boolean initialUpdate, int firstThruNode) {
         int size = tripRtFunc.length;
         boolean updated = false;
         if (initialUpdate) { // initialization jobs
@@ -183,7 +184,7 @@ public class NE {
             curTfc = new double[size][size];
         }
         double[][] curGraph = getTripRt(tripRtFunc, curTfc, tripRtFuncType);
-        Graph graph = new Graph(curGraph);
+        Graph graph = new Graph(curGraph, firstThruNode);
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (odPs[i][j] > 0) {
@@ -239,19 +240,19 @@ public class NE {
      * @return NEOutput
      * @see NEOutput
      */
-    public NEOutput frankWolfe(double[][][] tripRtFunc, double[][] odPs, String tripRtFuncType) {
+    public NEOutput frankWolfe(double[][][] tripRtFunc, double[][] odPs, String tripRtFuncType, int firstThruNode) {
 
         NEOutput neOutput = new NEOutput();
         int size = tripRtFunc.length;
         // Step 0: find a feasible solution (using the shortest path)
         double[][] curTfc = new double[size][size];
-        curTfc = getNewTfc(tripRtFunc, odPs, curTfc, tripRtFuncType);
+        curTfc = getNewTfc(tripRtFunc, odPs, curTfc, tripRtFuncType, firstThruNode);
         double z, newZ;
         int iter = 0;
 
         while (true) {
             // Step 1: solution of linearized sub problem
-            double[][] newTfc = getNewTfc(tripRtFunc, odPs, curTfc, tripRtFuncType);
+            double[][] newTfc = getNewTfc(tripRtFunc, odPs, curTfc, tripRtFuncType, firstThruNode);
             z = getZ(tripRtFunc, curTfc, tripRtFuncType);
 
 //            System.out.println("Iteration " + iter + ": " + z);
@@ -308,12 +309,12 @@ public class NE {
      * @return NEOutput
      * @see NEOutput
      */
-    public NEOutput columnGeneration(double[][][] tripRtFunc, double[][] odPs, String tripRtFuncType) {
+    public NEOutput columnGeneration(double[][][] tripRtFunc, double[][] odPs, String tripRtFuncType, int firstThruNode) {
         NEOutput neOutput = new NEOutput();
         int size = tripRtFunc.length;
         // Step 0: find a feasible solution (using the shortest path)
         this.maskedNetwork = new double[size][size][];
-        updateNetwork(tripRtFunc, odPs, neOutput.curTfc, tripRtFuncType, true); // curTfc is 0
+        updateNetwork(tripRtFunc, odPs, neOutput.curTfc, tripRtFuncType, true, firstThruNode); // curTfc is 0
         double z;
         int iter = 0;
 
@@ -331,9 +332,9 @@ public class NE {
             }
             System.out.println("Iteration " + iter+ ". Used link count: " + usedLinkCount);
             // Step 1: solve master problem
-            neOutput = frankWolfe(this.maskedNetwork, odPs, tripRtFuncType);
+            neOutput = frankWolfe(this.maskedNetwork, odPs, tripRtFuncType, firstThruNode);
             // Step 2: solve sub problem
-            boolean updated = updateNetwork(tripRtFunc, odPs, neOutput.curTfc, tripRtFuncType, false);
+            boolean updated = updateNetwork(tripRtFunc, odPs, neOutput.curTfc, tripRtFuncType, false, firstThruNode);
             if(!updated){
                 break;
             }
