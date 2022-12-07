@@ -1,6 +1,4 @@
 site\harrilee\dataProcessing\ReadData.class
-site\harrilee\serial\NE$NEOutput.class
-site\harrilee\serial\NE.class
+site\harrilee\serial\Graph.class
 site\harrilee\dataProcessing\ReadData$GraphData.class
 site\harrilee\neSolver.class
-site\harrilee\serial\Graph.class

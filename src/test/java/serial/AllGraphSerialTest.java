@@ -2,7 +2,7 @@ package serial;
 
 import site.harrilee.dataProcessing.ReadData;
 import site.harrilee.dataProcessing.ReadData.GraphData;
-import site.harrilee.serial.NE;
+import site.harrilee.serial.SerialNE;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -12,32 +12,32 @@ public class AllGraphSerialTest {
     @Test
     public void testBraessNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("Braess_net.xlsx");
-        NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+        SerialNE ne = new SerialNE();
+        SerialNE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
     @Test
     public void testBraessNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("Braess_net.xlsx");
-        NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+        SerialNE ne = new SerialNE();
+        SerialNE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
     @Test
     public void testNineNodeNetFW() throws IOException {
         GraphData graphData = new ReadData().readData("NineNode_net.xlsx");
-        NE ne = new NE();
-        NE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+        SerialNE ne = new SerialNE();
+        SerialNE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 
     @Test
     public void testNineNodeNetCG() throws IOException {
         GraphData graphData = new ReadData().readData("NineNode_net.xlsx");
-        NE ne = new NE();
-        NE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+        SerialNE ne = new SerialNE();
+        SerialNE.NEOutput neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
         System.out.println(neOutput.totalTime);
     }
 //

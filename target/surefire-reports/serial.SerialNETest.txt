@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: serial.SerialNETest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.1 sec - in serial.SerialNETest

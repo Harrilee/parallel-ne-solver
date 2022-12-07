@@ -31,13 +31,13 @@ public class ReadData {
     public GraphData readData(String filename) throws IOException {
         GraphData graphData = new GraphData();
 
-        String path = "./src/main/java/site/harrilee/dataProcessing/data/" + filename;
+        String path = "./data/" + filename;
         FileInputStream fis = new FileInputStream(new File(path));
         XSSFWorkbook wb = new XSSFWorkbook(fis);
         XSSFSheet sheet = wb.getSheetAt(0);
 
         // Read setup data
-        if (sheet.getRow(0).getCell(3) == null || (sheet.getRow(0).getCell(3).getCellType()==CellType.BLANK || (sheet.getRow(0).getCell(3).getCellType()==CellType.STRING && sheet.getRow(0).getCell(3).getStringCellValue().equals("")))) {
+        if (sheet.getRow(0).getCell(3) == null || (sheet.getRow(0).getCell(3).getCellTypeEnum()==CellType.BLANK || (sheet.getRow(0).getCell(3).getCellTypeEnum()==CellType.STRING && sheet.getRow(0).getCell(3).getStringCellValue().equals("")))) {
             graphData.numZones = parseInt(sheet.getRow(0).getCell(0).getStringCellValue().replaceAll("<.*> *", ""));
             graphData.numNodes = parseInt(sheet.getRow(1).getCell(0).getStringCellValue().replaceAll("<.*> *", ""));
             graphData.firstThruNode = parseInt(sheet.getRow(2).getCell(0).getStringCellValue().replaceAll("<.*> *", ""));
@@ -61,7 +61,7 @@ public class ReadData {
             if (row == null) continue;
             Cell cell = row.getCell(1);
             if (cell == null) continue;
-            if (cell.getCellType() == CellType.STRING && cell.getStringCellValue().equalsIgnoreCase("start node")) {
+            if (cell.getCellTypeEnum() == CellType.STRING && cell.getStringCellValue().equalsIgnoreCase("start node")) {
                 startNodeRow = i;
                 break;
             }
@@ -95,7 +95,7 @@ public class ReadData {
             if (row == null) continue;
             Cell cell = row.getCell(1);
             if (cell == null) continue;
-            if ((row.getCell(0)==null || Objects.equals(row.getCell(0).getStringCellValue(), "" )|| row.getCell(0).getCellType()==CellType.BLANK)  && cell.getCellType()==CellType.NUMERIC && cell.getNumericCellValue() == 1) {
+            if ((row.getCell(0)==null || Objects.equals(row.getCell(0).getStringCellValue(), "" )|| row.getCell(0).getCellTypeEnum()==CellType.BLANK)  && cell.getCellTypeEnum()==CellType.NUMERIC && cell.getNumericCellValue() == 1) {
                 startNodeRow2 = i;
                 break;
             }
