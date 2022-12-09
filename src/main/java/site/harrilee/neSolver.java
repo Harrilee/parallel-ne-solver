@@ -15,6 +15,7 @@ public class neSolver {
             System.exit(1);
         }
 
+        
         String dataFile = args[0];
         String method = args[1];
         String algorithm = args[2];
@@ -24,35 +25,47 @@ public class neSolver {
         long startTime = System.currentTimeMillis();
         double result = -1;
         int numPartitions = -1;
+        long timeGetNewTfc = -1;
+        long timeFindOptimalStep = -1;
+        long timeMainLoop = -1;
 
         if (method.equals("serial")) {
-            SerialNE ne = new SerialNE();
+                        SerialNE ne = new SerialNE();
+            SerialNE.NEOutput neOutput = null;
+            startTime = System.currentTimeMillis();
             if (algorithm.equals("frankWolfe")) {
-                ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+                neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
             } else if (algorithm.equals("columnGeneration")) {
-                ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+                neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
             } else {
                 System.out.println("Algorithm " + algorithm + " not supported. Please choose from frankWolfe or columnGeneration");
                 System.exit(1);
             }
-            SerialNE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+            timeGetNewTfc = ne.timeGetNewTfc;
+            timeFindOptimalStep = ne.timeFindOptimalStep;
+            timeMainLoop = ne.timeMainLoop;
             result = neOutput.totalTime;
         } else if (method.equals("parallel")) {
-            ParallelNE ne = new ParallelNE();
+                        ParallelNE ne = new ParallelNE();
+            ParallelNE.NEOutput neOutput = null;
             if (algorithm.equals("frankWolfe")) {
-                ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+                neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
             } else if (algorithm.equals("columnGeneration")) {
-                ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+                neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
             } else {
                 System.out.println("Algorithm " + algorithm + " not supported. Please choose from frankWolfe or columnGeneration");
                 System.exit(1);
             }
-            ParallelNE.NEOutput neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
             result = neOutput.totalTime;
+            timeGetNewTfc = ne.timeGetNewTfc;
+            timeFindOptimalStep = ne.timeFindOptimalStep;
+            timeMainLoop = ne.timeMainLoop;
             numPartitions = ne.numPartitions;
         }
 
+        
         long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
 
 
         System.out.print("\n\n--------------------------OUTPUT--------------------------\n");
@@ -60,8 +73,11 @@ public class neSolver {
         System.out.printf("Method: %s\n", method);
         System.out.printf("Dataset: %s\n", dataFile);
         System.out.printf("Num Partitions: %d\n", numPartitions);
-        System.out.printf("Exec Time: %.3f seconds\n", (endTime - startTime) / 1000.0);
-        System.out.printf("Output: %.3f seconds\n", result);
+        System.out.printf("Total Exec Time: %.3f\n", totalTime / 1000.0);
+        System.out.printf("GetNewTfc Time: %.3f\n", timeGetNewTfc / 1000.0);
+        System.out.printf("FindOptStep Time: %.3f\n", timeFindOptimalStep / 1000.0);
+        System.out.printf("Main Loop Time: %.3f\n", timeMainLoop / 1000.0);
+        System.out.printf("Algorithm Output: %.3f\n", result);
         System.out.print("----------------------------------------------------------\n");
     }
 }

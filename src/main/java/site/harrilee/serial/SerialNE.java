@@ -3,11 +3,15 @@ package site.harrilee.serial;
 
 public class SerialNE {
 
-    final int LOOP_LIMIT = 20;
+    final int LOOP_LIMIT = 5;
     final double EPSILON = 1e-6;
 
     public double[][] travelTimes; // travel time for each OD pair, used for column generation
     public double[][][] maskedNetwork; // masked network for each OD pair, used for column generation
+
+    public long timeGetNewTfc = 0;
+    public long timeFindOptimalStep = 0;
+    public long timeMainLoop = 0;
 
     /**
      * Return values for Frank-Wolfe algorithm and Column Generation algorithm
@@ -147,6 +151,7 @@ public class SerialNE {
      * @param firstThruNode  first thru node. Minimum is 1.
      */
     public double[][] getNewTfc(double[][][] tripRtFunc, double[][] odPs, double[][] curTfc, String tripRtFuncType, int firstThruNode) {
+        long startTime = System.currentTimeMillis();
         int size = tripRtFunc.length;
         double[][] curGraph = getTripRt(tripRtFunc, curTfc, tripRtFuncType);
         double[][] newTfc = new double[size][size];
@@ -161,6 +166,8 @@ public class SerialNE {
                 }
             }
         }
+        long endTime = System.currentTimeMillis();
+        this.timeGetNewTfc += endTime - startTime;
         return newTfc;
     }
 
@@ -190,14 +197,14 @@ public class SerialNE {
                 if (odPs[i][j] > 0) {
                     int[] shortestPath = graph.getShortestPath(i, j);
                     double shortestTime = graph.getShortestTime(i, j);
-                    if(shortestTime < this.travelTimes[i][j] || this.travelTimes[i][j] == 0) {
+                    if (shortestTime < this.travelTimes[i][j] || this.travelTimes[i][j] == 0) {
                         for (int k = 0; k < shortestPath.length - 1; k++) { // add the shortest path to masked network
                             if (this.maskedNetwork[shortestPath[k]][shortestPath[k + 1]] == null || this.maskedNetwork[shortestPath[k]][shortestPath[k + 1]].length == 0) {
                                 this.maskedNetwork[shortestPath[k]][shortestPath[k + 1]] = tripRtFunc[shortestPath[k]][shortestPath[k + 1]];
                                 updated = true;
                             }
                         }
-                        if(!initialUpdate) {
+                        if (!initialUpdate) {
                             // if this is the first update, we need to have a feasible solution
                             // thus we cannot have early return
                             // else we can apply early return
@@ -241,7 +248,6 @@ public class SerialNE {
      * @see NEOutput
      */
     public NEOutput frankWolfe(double[][][] tripRtFunc, double[][] odPs, String tripRtFuncType, int firstThruNode) {
-
         NEOutput neOutput = new NEOutput();
         int size = tripRtFunc.length;
         // Step 0: find a feasible solution (using the shortest path)
@@ -250,6 +256,7 @@ public class SerialNE {
         double z, newZ;
         int iter = 0;
 
+        long startTimeMainLoop = System.currentTimeMillis();
         while (true) {
             // Step 1: solution of linearized sub problem
             double[][] newTfc = getNewTfc(tripRtFunc, odPs, curTfc, tripRtFuncType, firstThruNode);
@@ -258,6 +265,7 @@ public class SerialNE {
 //            System.out.println("Iteration " + iter + ": " + z);
 
             // Step 2: find optimal step size (we can use the ParTan method as well, below is a simple method)
+            long startTime = System.currentTimeMillis();
             double stepSize = 0.5;
             for (int i = 0; i < this.LOOP_LIMIT; i++) {
                 // calculate gradient
@@ -272,6 +280,8 @@ public class SerialNE {
                     stepSize -= 1 / Math.pow(2, i + 1);
                 }
             }
+            long endTime = System.currentTimeMillis();
+            this.timeFindOptimalStep += (endTime - startTime);
 
             // Step 3: update current traffic
             curTfc = calcWeightedAverage2DArray(curTfc, newTfc, stepSize);
@@ -284,6 +294,8 @@ public class SerialNE {
                 iter++;
             }
         }
+        long endTimeMainLoop = System.currentTimeMillis();
+        this.timeMainLoop += (endTimeMainLoop - startTimeMainLoop);
 
         // End step: gather output values
         neOutput.curTfc = curTfc;
@@ -303,6 +315,7 @@ public class SerialNE {
     /**
      * Column generation algorithm for the network equilibrium problem.
      * This function calls the frankWolfe function to solve the linearized sub problem.
+     *
      * @param tripRtFunc     trip rate function
      * @param odPs           odPs[i][j] represents the travel demand from origin i to destination j
      * @param tripRtFuncType traffic function type, either "linear" or "BPR"
@@ -330,12 +343,12 @@ public class SerialNE {
                     }
                 }
             }
-            System.out.println("Iteration " + iter+ ". Used link count: " + usedLinkCount);
+            System.out.println("Iteration " + iter + ". Used link count: " + usedLinkCount);
             // Step 1: solve master problem
             neOutput = frankWolfe(this.maskedNetwork, odPs, tripRtFuncType, firstThruNode);
             // Step 2: solve sub problem
             boolean updated = updateNetwork(tripRtFunc, odPs, neOutput.curTfc, tripRtFuncType, false, firstThruNode);
-            if(!updated){
+            if (!updated) {
                 break;
             }
         }

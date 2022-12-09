@@ -17,7 +17,7 @@ import scala.Tuple2;
 
 public class ParallelNE {
 
-    final int LOOP_LIMIT = 20;
+    final int LOOP_LIMIT = 5;
     final double EPSILON = 1e-6;
 
     public double[][] travelTimes; // travel time for each OD pair, used for column generation
@@ -28,6 +28,9 @@ public class ParallelNE {
     public SparkContext sc;
 
     public int numPartitions;
+    public long timeGetNewTfc = 0;
+    public long timeFindOptimalStep = 0;
+    public long timeMainLoop = 0;
 
     /**
      * Return values for Frank-Wolfe algorithm and Column Generation algorithm
@@ -185,6 +188,7 @@ public class ParallelNE {
      * @param firstThruNode  first thru node. Minimum is 1.
      */
     public double[][] getNewTfc(double[][][] tripRtFunc, double[][] odPs, double[][] curTfc, String tripRtFuncType, int firstThruNode) {
+        long startTime = System.currentTimeMillis();
         int size = tripRtFunc.length;
         double[][] curGraph = getTripRt(tripRtFunc, curTfc, tripRtFuncType);
         double[][] newTfc = new double[size][size];
@@ -227,15 +231,8 @@ public class ParallelNE {
             }
         }
 
-        /* PRINT */
-//        System.out.println("New traffic:");
-//        for (int i = 0; i < size; i++) {
-//            for (int j = 0; j < size; j++) {
-//                System.out.print(newTfc[i][j] + " ");
-//            }
-//            System.out.println();
-//        }
-        /* END PRINT */
+        long endTime = System.currentTimeMillis();
+        this.timeGetNewTfc += endTime - startTime;
         return newTfc;
     }
 
@@ -325,6 +322,7 @@ public class ParallelNE {
         double z, newZ;
         int iter = 0;
 
+        long startTimeMainLoop = System.currentTimeMillis();
         while (true) {
             // Step 1: solution of linearized sub problem
             double[][] newTfc = getNewTfc(tripRtFunc, odPs, curTfc, tripRtFuncType, firstThruNode);
@@ -333,6 +331,7 @@ public class ParallelNE {
 //            System.out.println("Iteration " + iter + ": " + z);
 
             // Step 2: find optimal step size (we can use the ParTan method as well, below is a simple method)
+            long startTime = System.currentTimeMillis();
             double stepSize = 0.5;
             for (int i = 0; i < this.LOOP_LIMIT; i++) {
                 // calculate gradient
@@ -347,6 +346,8 @@ public class ParallelNE {
                     stepSize -= 1 / Math.pow(2, i + 1);
                 }
             }
+            long endTime = System.currentTimeMillis();
+            this.timeFindOptimalStep += (endTime - startTime);
 
             // Step 3: update current traffic
             curTfc = calcWeightedAverage2DArray(curTfc, newTfc, stepSize);
@@ -359,6 +360,8 @@ public class ParallelNE {
                 iter++;
             }
         }
+        long endTimeMainLoop = System.currentTimeMillis();
+        this.timeMainLoop += (endTimeMainLoop - startTimeMainLoop);
 
         // End step: gather output values
         neOutput.curTfc = curTfc;
