@@ -50,8 +50,8 @@ public class neSolver {
             ParallelNE.NEOutput neOutput = null;
             if (algorithm.equals("frankWolfe")) {
                 neOutput = ne.frankWolfe(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
-            } else if (algorithm.equals("columnGeneration")) {
-                neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
+//            } else if (algorithm.equals("columnGeneration")) {
+//                neOutput = ne.columnGeneration(graphData.tripRtFunc, graphData.odPs, "BPR", graphData.firstThruNode);
             } else {
                 System.out.println("Algorithm " + algorithm + " not supported. Please choose from frankWolfe or columnGeneration");
                 System.exit(1);

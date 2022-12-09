@@ -1,6 +1,8 @@
 package site.harrilee.serial;
 
 
+import java.util.Arrays;
+
 public class SerialNE {
 
     final int LOOP_LIMIT = 5;
@@ -289,6 +291,7 @@ public class SerialNE {
             // Step 4: check convergence
             newZ = getZ(tripRtFunc, curTfc, tripRtFuncType);
             if (z - newZ < this.EPSILON) {
+                System.out.println("Converged at iteration " + iter + " with newZ = " + newZ + " and z = " + z);
                 break;
             } else {
                 iter++;
